@@ -51,9 +51,12 @@ Module.symvers
 Mkfile.old
 dkms.conf
 <<<<<<< HEAD
+<<<<<<< HEAD
 *.thj15
 *.thj15
 *.thj15
 *.thj15
+=======
+>>>>>>> parent of 4b6c830... 速度增加
 =======
 >>>>>>> parent of 4b6c830... 速度增加
