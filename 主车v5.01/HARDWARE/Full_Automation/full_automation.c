@@ -72,7 +72,7 @@ shashfjh
 #define Back_sp  70			//后退速度
 #define L_sp     90		  //左转速度
 #define R_sp	 90			//右转速度
-#define XJ_sp    50		//循迹速度
+#define XJ_sp    35		//循迹速度
 
 #define Go_mp    21		    //前进码盘
 #define Back_mp  100		//后退码盘
@@ -84,11 +84,11 @@ u8 Hw_Data[6];			    //红外数据
 u8 RX_AGV_Data[] = {0x55,0x02,0x00,0x00,0x00,0x00,0x00,0xBB};// 从车控制控制指令数据
 
 u8 RXRFID[16];												 //存放RFID数据
-u8 LI_ADR[3];//
-//u8 Read_CardOK=0;//0：没有都卡，1：读卡成功
-u8 RFID_ADRSS;//RFID块地址
-u8 LIGHT_Grent;//光照等级
-
+//u8 LI_ADR[3]={0X01,0X09,0X00};//光照强度和RFID卡块地址
+u8 LI_ADR[3];//光照强度和RFID卡块地址
+u8 Read_CardOK=0;//0：没有都卡，1：读卡成功
+//u8 
+				 	 
 u8 TXRFID[16] = {0x28,0x22,0x44,0x32,0x2D,0x3E,0x22,0x2C,0x22,0x44,0x32,0x2D,0x3E,0x45,0x22,0x29};//第二轮
 
 
@@ -919,7 +919,7 @@ void Full_Find_cardsALL1(u8 num1)
 			Send_Debug_Info("(1)\n",5);
 			delay_ms(1000);
 //			Full_Read_Card();						//读卡操作
-			Read_Card(RFID_ADRSS);	    //读写卡
+			Read_Card(LI_ADR[1]);	    //读写卡
 			delay_ms(1000);
 			BEEP = 1;
 			Full_Go(Go_sp,5);				//继续完成前进
@@ -936,9 +936,9 @@ void Full_Find_cardsALL1(u8 num1)
 	Send_Debug_Info("LI\n",4); // 上传调试信息
 }
 /****************************************************************
-函数功能：全自动寻卡
-参	   数：无
-返回  值：无2,3
+函数功能：全自动寻卡2_3
+参	  数：无
+返回  值：无
 *****************************************************************/
 void Full_Find_cardsALL2(u8 num1,u8 num2)
 {
@@ -963,7 +963,7 @@ void Full_Find_cardsALL2(u8 num1,u8 num2)
 			
 			delay_ms(1000);
 			
-			 Read_Card(RFID_ADRSS);	    //读写卡
+			 Read_Card(LI_ADR[1]);	    //读写卡
 			//Full_Read_Card();						//读卡操作
 			delay_ms(1000);
 			BEEP = 1;
@@ -989,7 +989,7 @@ void Full_Find_cardsALL2(u8 num1,u8 num2)
 			Send_Debug_Info("(3)\n",5);
 			delay_ms(1000);
 			
-			Read_Card(RFID_ADRSS);	    //读写卡
+			Read_Card(LI_ADR[1]);	    //读写卡
 			//Full_Read_Card();						   //读卡操作
 			delay_ms(1000);
 			BEEP = 1;
@@ -1002,141 +1002,13 @@ void Full_Find_cardsALL2(u8 num1,u8 num2)
 		}
 	}	
 	RFID_Data_Handler(RXRFID);		//对RFID内数据进行处理
-}
-
-/****************************************************************
-函数功能：无延时性寻卡
-参	   数：无
-返回  值：无
-*****************************************************************/
-void Full_Find_cardsALL3(u8 num1,u8 num2)
-{
-	char status = 0;
-	u8 RFID_TASK_Flag = 1;
-	u8 CT[2];									    //卡类型
-			
-	Tracking(XJ_sp-5);								//循迹
-	RFID_TASK_Flag = 1;
-	
-	while(RFID_TASK_Flag)
-	{
-		status = PcdRequest(PICC_REQALL,CT);	    //寻卡
-		if(status == MI_OK)						    //寻卡成功
-		{
-			delay_ms(150);
-			STOP();
-			RFID_Card_Position = num1;					//RFID 位置坐标为 2——C2
-			
-			Send_Debug_Info("(2)\n",5);
-			
-			delay_ms(1000);
-			
-			 Read_Card(RFID_ADRSS);	    //读写卡
-			//Full_Read_Card();						//读卡操作
-			delay_ms(1000);
-			BEEP = 1;
-			Full_Tracking(XJ_sp-5);					//继续循迹
-			RFID_TASK_Flag = 0;
-		} 
-		else if(Stop_Flag == 0x01)					//循迹完成
-		{			
-			RFID_TASK_Flag = 0;
-		}
-	}
-	
-	Go(Go_sp-5,Go_mp);
-	RFID_TASK_Flag = 1;
-	while(RFID_TASK_Flag)
-	{
-		status = PcdRequest(PICC_REQALL,CT);	    //寻卡
-		if(status == MI_OK)							//寻卡成功
-		{
-			delay_ms(150);
-			STOP();
-			RFID_Card_Position = num2;					//RFID 位置坐标为 3——D2
-			Send_Debug_Info("(3)\n",5);
-			delay_ms(1000);
-			
-			Read_Card(RFID_ADRSS);	    //读写卡
-			//Full_Read_Card();						   //读卡操作
-			delay_ms(1000);
-			BEEP = 1;
-			Full_Go(Go_sp-5,5);						//继续完成前进
-			RFID_TASK_Flag = 0;
-		} 
-		else if(Stop_Flag == 0x03)					//前进完成
-		{
-			RFID_TASK_Flag = 0;
-		}
-	}	
-	RFID_Data_Handler(RXRFID);		//对RFID内数据进行处理
+//  Send_Debug_Info("RFID_OK\n",10); // 上传调试信息
 }
 
 
-void Full_Find_cardsALL4(u8 num1,u8 num2,u16 timer_del)//定距寻卡
-{
 
-	char status = 0;
-	u8 RFID_TASK_Flag = 1;
-	u8 CT[2];									    //卡类型
-			
-	Tracking(XJ_sp-5);								//循迹
-	delay_ms(timer_del);									//等待一段时间再开启寻卡
-	RFID_TASK_Flag = 1;
-	
-	while(RFID_TASK_Flag)
-	{
-		status = PcdRequest(PICC_REQALL,CT);	    //寻卡
-		if(status == MI_OK)						    //寻卡成功
-		{
-			delay_ms(150);
-			STOP();
-			RFID_Card_Position = num1;					//RFID 位置坐标为 2——C2
-			
-			Send_Debug_Info("(2)\n",5);
-			
-			delay_ms(1000);
-			
-			 Read_Card(RFID_ADRSS);	    //读写卡
-			//Full_Read_Card();						//读卡操作
-			delay_ms(1000);
-			BEEP = 1;
-			Full_Tracking(XJ_sp-5);					//继续循迹
-			RFID_TASK_Flag = 0;
-		} 
-		else if(Stop_Flag == 0x01)					//循迹完成
-		{			
-			RFID_TASK_Flag = 0;
-		}
-	}
-	
-	Go(Go_sp-5,Go_mp);
-	RFID_TASK_Flag = 1;
-	while(RFID_TASK_Flag)
-	{
-		status = PcdRequest(PICC_REQALL,CT);	    //寻卡
-		if(status == MI_OK)							//寻卡成功
-		{
-			delay_ms(150);
-			STOP();
-			RFID_Card_Position = num2;					//RFID 位置坐标为 3——D2
-			Send_Debug_Info("(3)\n",5);
-			delay_ms(1000);
-			
-			Read_Card(RFID_ADRSS);	    //读写卡
-			//Full_Read_Card();						   //读卡操作
-			delay_ms(1000);
-			BEEP = 1;
-			Full_Go(Go_sp-5,5);						//继续完成前进
-			RFID_TASK_Flag = 0;
-		} 
-		else if(Stop_Flag == 0x03)					//前进完成
-		{
-			RFID_TASK_Flag = 0;
-		}
-	}	
-	RFID_Data_Handler(RXRFID);		//对RFID内数据进行处理
-}
+
+
 
 /****************************************************************
 函数功能：全自动主车入库
@@ -1459,12 +1331,6 @@ void LIGHT_disPLAY(u8 *str,u16 ligh_temp)
     Send_Debug_Info(temp,4);
 	Send_Debug_Info("\n",2);
 }
-
-
-
-
-
-
 /****************************************************************
 函数功能：全自动起始动作
 参	  数：无
@@ -1513,72 +1379,31 @@ void Full_Motion()
 			delay_ms(500);
 			Full_Return_Data(0xC2);					//返回到达二维码标志物处
 			delay_ms(500);
-			Full_Circulate_Flag = 0;				//等待二维码解析结果
+			Full_Circulate_Flag = 0;				//等待二维码解析结果		
 			mark = 35;
 			break;
 		case 35://寻卡阶段
-			delay_ms(1000);
-			Full_Find_cardsALL3(4,5);
-		    if(RFID_Card_Position==4||RFID_Card_Position==5)
-			{
-			
-			
-			
-			
-			}
-			else
-			{
-				Full_Left(L_sp);
-				delay_ms(500);
-				Full_Left(L_sp);
-				delay_ms(500);
-			    Full_Find_cardsALL4(4,3,1500);					//循迹	
-				if(RFID_Card_Position==3||RFID_Card_Position==4)
-				{
-					Full_Left(L_sp);
-					delay_ms(500);
-					Full_Left(L_sp);
-					delay_ms(500); 
-					Full_Tracking(XJ_sp);					//循迹			
-			        Full_Go(Go_sp,Go_mp);					//前进	D2
-				}
-				else
-				{				
-				    Full_Right(R_sp);
-					Full_Find_cardsALL4(2,1,1500);					//循迹	
-					Full_Left(L_sp);
-					delay_ms(500);
-					Full_Left(L_sp);
-					delay_ms(500); 
-					Full_Tracking(XJ_sp);					//循迹			
-			        Full_Go(Go_sp,Go_mp);					//前进	D2
-					Full_Left(L_sp);
-					Full_Tracking(XJ_sp);					//循迹			
-			        Full_Go(Go_sp,Go_mp);					//前进	D2
-				}
-			}
-//			Full_Tracking(XJ_sp);					//循迹			
-//			Full_Go(Go_sp,Go_mp);					//前进	D2
-//		    Full_Left(L_sp);
-//			delay_ms(500);
-//		    Full_Left(L_sp);
-//		    delay_ms(200);
-//		    Full_Tracking(XJ_sp);					//循迹			
-//			Full_Go(Go_sp,Go_mp);					//前进  F2
-//		    Full_Right(R_sp);
-//			Full_Tracking(XJ_sp);					//循迹	
+			Full_Tracking(XJ_sp);					//循迹			
+			Full_Go(Go_sp,Go_mp);					//前进	D2
+		    Full_Left(L_sp);
+			delay_ms(500);
+		    Full_Left(L_sp);
+		    delay_ms(200);
+		    Full_Tracking(XJ_sp);					//循迹			
+			Full_Go(Go_sp,Go_mp);					//前进  F2
+		    Full_Right(R_sp);
+			Full_Tracking(XJ_sp);					//循迹	
 
 
-//            ////////此处需要优化		
-//			Full_Go(Go_sp,Go_mp);					//前进  F4
-//		    Full_Left(L_sp);
-//		    delay_ms(500);
-//		    Full_Left(L_sp);						//到达 F4 车头朝上
-//		    Full_Find_cardsALL2(2,3);
-//		    Full_Left(L_sp);					//右转
-//		    Full_Find_cardsALL2(4,5);
+            ////////此处需要优化		
+			Full_Go(Go_sp,Go_mp);					//前进  F4
+		    Full_Left(L_sp);
+		    delay_ms(500);
+		    Full_Left(L_sp);						//到达 F4 车头朝上
+		    Full_Find_cardsALL2(2,3);
+		    Full_Left(L_sp);					//右转
+		    Full_Find_cardsALL2(4,5);
 			mark = 40;
-
 			break;
 		case 40://到达B2
 	        Full_Tracking(XJ_sp);					//循迹	
@@ -1586,7 +1411,8 @@ void Full_Motion()
 			mark = 45;
 			break;
 		case 45://小车在B2开始调光
-			Full_Light_Goal(LIGHT_Grent);  		
+//			Full_Light_Goal(LI_ADR[0]);  
+			Full_Light_Goal(LI_ADR[0]);  		
 			Send_Debug_Info("Stall:",10);
 			if(LI_ADR[0]==1)      Send_Debug_Info("1\n",3); 
 			else if(LI_ADR[0]==2) Send_Debug_Info("2\n",3); 
@@ -1711,7 +1537,7 @@ void Full_Motion()
 void DEbugNUM(u16 xr)//小于6位数哦
 {
 	u8 hu[6];
-	sprintf((char*)hu,"%d",(char*)xr);	
-	Send_Debug_Info((u8 * )hu,strlen(hu));
+	sprintf((char*)hu,"%d",xr);	
+	Send_Debug_Info(hu,strlen(hu));
 }
 

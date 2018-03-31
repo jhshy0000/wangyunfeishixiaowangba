@@ -226,10 +226,9 @@ int main(void)
 						{
 							//Caution_Text[i] = Hw_Data[i];		//保存报警数据
 							Caution_Text[i]=HW_K[i];
-							Send_Debug_Info("有红外数据",8); // 上传调试信息	
+							Send_Debug_Info("有红外数据",8); // 上传调试信息
+							
 						}
-						LIGHT_Grent=LI_ADR[0];//调光等级
-						RFID_ADRSS=LI_ADR[1];//r
 						Send_Debug_Info(Caution_Text,6); // 上传调试信息
 						Full_Circulate_Flag = 1;
 						break;
