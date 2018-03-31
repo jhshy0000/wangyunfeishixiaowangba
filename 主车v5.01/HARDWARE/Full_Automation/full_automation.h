@@ -7,8 +7,10 @@ void Readcard_daivce_Init(void);
 void Full_Go(u8 sp,u8 mp);			//全自动前进
 void Full_Read_Card(void);			//全自动RFID读写卡操作
 void Read_Card(u8 s);               //RFID读写卡操作
-void Full_Find_cardsALL1(u8 num1);			//全自动寻卡操作
-void Full_Find_cardsALL2(u8 num1,u8 num2);
+void Full_Find_cardsALL1(u8 num1);  //定点寻卡
+void Full_Find_cardsALL2(u8 num1,u8 num2);//自动寻卡
+void Full_Find_cardsALL3(u8 num1,u8 num2);//无延性寻卡
+void Full_Find_cardsALL4(u8 num1,u8 num2,u16 timer_del);//定距寻卡
 void Full_Tracking(u8 sp);          //全自动循迹
 void Full_Motion(void);				//全自动       
 void AGV_Return_state(u8 num);  	//控制AGV返回状态
@@ -36,6 +38,9 @@ extern u8 Shape_Number[10];			//形状个数
 extern u8 ETC_Open_Flag;			//允许ETC打卡返回标志位
 extern u8 LI_ADR[3];
 extern u8 Start_AGV_Position;					//根据RFID内信息得到AGV起始位置坐标
+extern u8 RFID_ADRSS;//RFID块地址
+extern u8 LIGHT_Grent;//光照等级
+
 
 void TFT_turn_over(u8 num);			//TFT翻页
 void LED_RL(u8 timer);
