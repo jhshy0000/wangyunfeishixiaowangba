@@ -65,7 +65,10 @@
 *****************************************************************************************
 ****************************************************************************************/
 //主车参数
-#define Go_sp    70			//前进速度
+#define Go_sp    70ommit your changes or stash them before you merge.
+Aborting
+fatal: revert failed			//前进速度
+shashfjh
 #define Back_sp  70			//后退速度
 #define L_sp     90		  //左转速度
 #define R_sp	 90			//右转速度
